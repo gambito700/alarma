@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarma de Cocina con Ladrido de Perro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+            background-image: linear-gradient(to bottom right, #f9f3e9, #e8dfca);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background-color: #8b4513;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 5px solid #654321;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+        }
+        
+        .alarm-display {
+            flex: 1;
+            min-width: 300px;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            padding: 10px;
+        }
+        
+        .time-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        #current-time {
+            font-size: 4rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #f1c40f;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .alarm-set {
+            background-color: #34495e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .alarm-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #f1c40f;
+            text-align: center;
+        }
+        
+        #alarm-time-display {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .alarm-status {
+            text-align: center;
+            font-size: 1.3rem;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .alarm-off {
+            background-color: #27ae60;
+        }
+        
+        .alarm-on {
+            background-color: #e74c3c;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { background-color: #e74c3c; }
+            50% { background-color: #c0392b; }
+            100% { background-color: #e74c3c; }
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        .control-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #8b4513;
+            border-bottom: 2px solid #8b4513;
+            padding-bottom: 5px;
+        }
+        
+        .time-selectors {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .time-selector {
+            text-align: center;
+            flex: 1;
+            margin: 0 10px;
+        }
+        
+        .time-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+            border: 2px solid #8b4513;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            flex: 1;
+            margin: 0 10px;
+        }
+        
+        #set-alarm {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        #set-alarm:hover {
+            background-color: #219653;
+            transform: translateY(-3px);
+        }
+        
+        #stop-alarm {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        #stop-alarm:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+        }
+        
+        #test-sound {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        #test-sound:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+        }
+        
+        .dog-image {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .dog-image img {
+            max-width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            border-left: 5px solid #8b4513;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .instructions h3 {
+            color: #8b4513;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+        }
+        
+        .alarm-ringing {
+            animation: shake 0.5s infinite;
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .alarm-display {
+                margin-right: 0;
+            }
+            
+            .time-selectors {
+                flex-direction: column;
+            }
+            
+            .time-selector {
+                margin: 10px 0;
+            }
+            
+            #current-time {
+                font-size: 3rem;
+            }
+            
+            #alarm-time-display {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Alarma de Cocina con Ladrido</h1>
+            <p class="subtitle">Configura tu alarma con el sonido de ladrido de perro</p>
+        </header>
+        
+        <div class="content">
+            <div class="alarm-display">
+                <div class="time-display">
+                    <div>Hora Actual</div>
+                    <div id="current-time">--:--:--</div>
+                </div>
+                
+                <div class="alarm-set">
+                    <div class="alarm-title">Alarma Configurada</div>
+                    <div id="alarm-time-display">--:--:--</div>
+                    
+                    <div class="dog-image">
+                        <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="Perro ladrando" id="dog-img">
+                    </div>
+                    
+                    <div id="alarm-status" class="alarm-status alarm-off">
+                        Alarma Apagada
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <div class="control-title">Configurar Alarma</div>
+                    
+                    <div class="time-selectors">
+                        <div class="time-selector">
+                            <label for="hours">Horas</label>
+                            <select id="hours">
+                                <!-- Las horas se generarán con JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="time-selector">
+                            <label for="minutes">Minutos</label>
+                            <select id="minutes">
+                                <!-- Los minutos se generarán con JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="time-selector">
+                            <label for="seconds">Segundos</label>
+                            <select id="seconds">
+                                <!-- Los segundos se generarán con JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button id="set-alarm">Activar Alarma</button>
+                        <button id="stop-alarm" disabled>Detener Alarma</button>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <button id="test-sound">Probar Sonido de Ladrido</button>
+                    </div>
+                </div>
+                
+                <div class="instructions">
+                    <h3>Instrucciones de Uso</h3>
+                    <ul>
+                        <li>Selecciona la hora, minutos y segundos para configurar la alarma</li>
+                        <li>Haz clic en "Activar Alarma" para programarla</li>
+                        <li>La alarma sonará (ladrido de perro) cuando llegue la hora configurada</li>
+                        <li>Haz clic en "Detener Alarma" para silenciarla</li>
+                        <li>Usa "Probar Sonido de Ladrido" para escuchar cómo sonará la alarma</li>
+                        <li>La alarma se reiniciará automáticamente cada 10 segundos hasta que la detengas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Alarma de Cocina con Ladrido de Perro • Hecho con HTML, CSS y JavaScript</p>
+        </footer>
+    </div>
+
+    <audio id="bark-sound" preload="auto">
+        <!-- Sonido de ladrido de perro -->
+    </audio>
+
+    <script>
+        // Elementos del DOM
+        const currentTimeDisplay = document.getElementById('current-time');
+        const alarmTimeDisplay = document.getElementById('alarm-time-display');
+        const alarmStatus = document.getElementById('alarm-status');
+        const hoursSelect = document.getElementById('hours');
+        const minutesSelect = document.getElementById('minutes');
+        const secondsSelect = document.getElementById('seconds');
+        const setAlarmButton = document.getElementById('set-alarm');
+        const stopAlarmButton = document.getElementById('stop-alarm');
+        const testSoundButton = document.getElementById('test-sound');
+        const barkSound = document.getElementById('bark-sound');
+        const dogImage = document.getElementById('dog-img');
+        
+        // Variables de estado
+        let alarmTime = null;
+        let alarmActive = false;
+        let alarmRinging = false;
+        
+        // Generar opciones para los selectores de tiempo
+        function generateTimeOptions() {
+            // Horas (0-23)
+            for (let i = 0; i < 24; i++) {
+                const option = document.createElement('option');
+                option.value = i < 10 ? '0' + i : i;
+                option.textContent = i < 10 ? '0' + i : i;
+                hoursSelect.appendChild(option);
+            }
+            
+            // Minutos (0-59)
+            for (let i = 0; i < 60; i++) {
+                const option = document.createElement('option');
+                option.value = i < 10 ? '0' + i : i;
+                option.textContent = i < 10 ? '0' + i : i;
+                minutesSelect.appendChild(option);
+            }
+            
+            // Segundos (0-59)
+            for (let i = 0; i < 60; i++) {
+                const option = document.createElement('option');
+                option.value = i < 10 ? '0' + i : i;
+                option.textContent = i < 10 ? '0' + i : i;
+                secondsSelect.appendChild(option);
+            }
+            
+            // Establecer valores por defecto (5 minutos desde ahora)
+            const now = new Date();
+            const defaultAlarmTime = new Date(now.getTime() + 5 * 60000);
+            
+            hoursSelect.value = defaultAlarmTime.getHours().toString().padStart(2, '0');
+            minutesSelect.value = defaultAlarmTime.getMinutes().toString().padStart(2, '0');
+            secondsSelect.value = '00';
+        }
+        
+        // Actualizar la hora actual
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            currentTimeDisplay.textContent = timeString;
+            
+            // Comprobar si es hora de la alarma
+            if (alarmActive && alarmTime && !alarmRinging) {
+                const currentTimeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                                         now.getMinutes().toString().padStart(2, '0') + ':' + 
+                                         now.getSeconds().toString().padStart(2, '0');
+                
+                if (currentTimeString === alarmTime) {
+                    triggerAlarm();
+                }
+            }
+        }
+        
+        // Activar la alarma
+        function setAlarm() {
+            const hours = hoursSelect.value;
+            const minutes = minutesSelect.value;
+            const seconds = secondsSelect.value;
+            
+            alarmTime = `${hours}:${minutes}:${seconds}`;
+            alarmTimeDisplay.textContent = alarmTime;
+            
+            alarmActive = true;
+            alarmStatus.textContent = `Alarma Activada para las ${alarmTime}`;
+            alarmStatus.className = 'alarm-status alarm-on';
+            
+            setAlarmButton.disabled = true;
+            stopAlarmButton.disabled = false;
+            
+            // Deshabilitar selectores mientras la alarma está activa
+            hoursSelect.disabled = true;
+            minutesSelect.disabled = true;
+            secondsSelect.disabled = true;
+            
+            // Actualizar imagen del perro
+            dogImage.src = "https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
+            
+            console.log(`Alarma configurada para las ${alarmTime}`);
+        }
+        
+        // Detener la alarma
+        function stopAlarm() {
+            alarmActive = false;
+            alarmRinging = false;
+            
+            alarmStatus.textContent = 'Alarma Apagada';
+            alarmStatus.className = 'alarm-status alarm-off';
+            
+            setAlarmButton.disabled = false;
+            stopAlarmButton.disabled = true;
+            
+            // Rehabilitar selectores
+            hoursSelect.disabled = false;
+            minutesSelect.disabled = false;
+            secondsSelect.disabled = false;
+            
+            // Detener el sonido
+            barkSound.pause();
+            barkSound.currentTime = 0;
+            
+            // Quitar animación de vibración
+            document.querySelector('.alarm-display').classList.remove('alarm-ringing');
+            
+            // Restaurar imagen original del perro
+            dogImage.src = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80";
+            
+            console.log('Alarma detenida');
+        }
+        
+        // Hacer sonar la alarma
+        function triggerAlarm() {
+            alarmRinging = true;
+            alarmStatus.textContent = '¡ALARMA SONANDO!';
+            alarmStatus.className = 'alarm-status alarm-on';
+            
+            // Añadir animación de vibración
+            document.querySelector('.alarm-display').classList.add('alarm-ringing');
+            
+            // Cambiar imagen del perro a uno ladrando
+            dogImage.src = "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=962&q=80";
+            
+            // Reproducir sonido de ladrido
+            playBarkSound();
+            
+            console.log('¡Alarma sonando!');
+        }
+        
+        // Reproducir sonido de ladrido
+        function playBarkSound() {
+            // Crear un sonido de ladrido sintético si no hay un archivo de audio disponible
+            // En un caso real, aquí cargaríamos un archivo de audio
+            barkSound.innerHTML = '';
+            
+            // Crear un contexto de audio para generar un ladrido sintético
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Crear un oscilador para el ladrido
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                // Configurar el oscilador para que suene como un ladrido
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
+                
+                // Configurar la ganancia (volumen) para que decaiga
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                // Conectar los nodos
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Reproducir el sonido
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.3);
+                
+                // Repetir el ladrido después de un breve silencio
+                setTimeout(() => {
+                    if (alarmRinging) {
+                        playBarkSound();
+                    }
+                }, 1000);
+                
+            } catch (e) {
+                // Fallback: usar tonos de navegador si Web Audio API no está disponible
+                console.log("Web Audio API no disponible, usando fallback");
+                
+                // Crear un audio simple con frecuencias
+                const fallbackSound = new Audio();
+                const duration = 0.3;
+                const sampleRate = 44100;
+                const numSamples = duration * sampleRate;
+                
+                // Crear un buffer de audio
+                const audioBuffer = new AudioContext().createBuffer(1, numSamples, sampleRate);
+                const channelData = audioBuffer.getChannelData(0);
+                
+                // Generar un sonido que se asemeje a un ladrido
+                for (let i = 0; i < numSamples; i++) {
+                    const t = i / sampleRate;
+                    const frequency = 800 * Math.exp(-3 * t); // Frecuencia que decae
+                    channelData[i] = 0.5 * Math.sin(2 * Math.PI * frequency * t) * Math.exp(-4 * t);
+                }
+                
+                // Reproducir el sonido
+                const source = new AudioContext().createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(new AudioContext().destination);
+                source.start();
+                
+                // Repetir el ladrido después de un breve silencio
+                setTimeout(() => {
+                    if (alarmRinging) {
+                        playBarkSound();
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Probar el sonido de ladrido
+        function testBarkSound() {
+            // Crear una copia temporal del estado de la alarma
+            const wasRinging = alarmRinging;
+            
+            // Simular que la alarma está sonando
+            alarmRinging = true;
+            
+            // Reproducir el ladrido
+            playBarkSound();
+            
+            // Mostrar mensaje de prueba
+            const originalStatus = alarmStatus.textContent;
+            alarmStatus.textContent = 'Probando sonido de ladrido...';
+            alarmStatus.className = 'alarm-status alarm-on';
+            
+            // Restaurar después de 2 segundos
+            setTimeout(() => {
+                alarmRinging = wasRinging;
+                
+                if (!wasRinging) {
+                    // Detener cualquier sonido en reproducción
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        audioContext.close();
+                    } catch(e) {}
+                    
+                    // Restaurar estado original
+                    if (alarmActive) {
+                        alarmStatus.textContent = `Alarma Activada para las ${alarmTime}`;
+                        alarmStatus.className = 'alarm-status alarm-on';
+                    } else {
+                        alarmStatus.textContent = 'Alarma Apagada';
+                        alarmStatus.className = 'alarm-status alarm-off';
+                    }
+                }
+            }, 2000);
+        }
+        
+        // Inicializar la aplicación
+        function init() {
+            // Generar opciones de tiempo
+            generateTimeOptions();
+            
+            // Actualizar la hora cada segundo
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // Configurar eventos de los botones
+            setAlarmButton.addEventListener('click', setAlarm);
+            stopAlarmButton.addEventListener('click', stopAlarm);
+            testSoundButton.addEventListener('click', testBarkSound);
+            
+            // Configurar alarma por defecto (5 minutos desde ahora)
+            const now = new Date();
+            const defaultAlarmTime = new Date(now.getTime() + 5 * 60000);
+            
+            hoursSelect.value = defaultAlarmTime.getHours().toString().padStart(2, '0');
+            minutesSelect.value = defaultAlarmTime.getMinutes().toString().padStart(2, '0');
+            secondsSelect.value = '00';
+            
+            // Mostrar la alarma por defecto
+            alarmTimeDisplay.textContent = `${hoursSelect.value}:${minutesSelect.value}:${secondsSelect.value}`;
+            
+            console.log('Alarma de cocina con ladrido de perro inicializada');
+        }
+        
+        // Iniciar la aplicación cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
