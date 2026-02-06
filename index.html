@@ -326,6 +326,34 @@
             font-size: 0.9rem;
         }
         
+        .video-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        #video-thumbnail {
+            max-width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        #video-thumbnail:hover {
+            transform: scale(1.02);
+        }
+        
+        .video-link {
+            display: block;
+            margin-top: 10px;
+            color: #065fd4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .video-link:hover {
+            text-decoration: underline;
+        }
+        
         footer {
             text-align: center;
             padding: 20px;
@@ -441,26 +469,34 @@
                 </div>
                 
                 <div class="sound-selection">
-                    <div class="control-title">Seleccionar Sonido de Ladrido</div>
-                    <p>Elige el tipo de ladrido que quieres que suene en la alarma:</p>
+                    <div class="control-title">Sonido de Alarma - Ladrido de Perro</div>
+                    <p>La alarma usará este video de YouTube con ladridos de perro:</p>
+                    
+                    <div class="video-preview">
+                        <img src="https://img.youtube.com/vi/4_O-y3SM3UM/mqdefault.jpg" alt="Miniatura del video de YouTube" id="video-thumbnail">
+                        <a href="https://youtu.be/4_O-y3SM3UM?si=cbWLIMiemng4VX39" target="_blank" class="video-link">
+                            <i class="fas fa-external-link-alt"></i> Ver video en YouTube
+                        </a>
+                    </div>
                     
                     <div class="sound-options">
-                        <div class="sound-option active" data-video-id="9RnbkBv_xsA" data-start="0">
-                            <i class="fas fa-dog"></i> Ladrido Grande
+                        <div class="sound-option active" data-start="5">
+                            <i class="fas fa-play-circle"></i> Ladrido Inicial (5s)
                         </div>
-                        <div class="sound-option" data-video-id="9RnbkBv_xsA" data-start="20">
-                            <i class="fas fa-dog"></i> Ladrido Pequeño
+                        <div class="sound-option" data-start="15">
+                            <i class="fas fa-play-circle"></i> Ladrido Medio (15s)
                         </div>
-                        <div class="sound-option" data-video-id="9RnbkBv_xsA" data-start="40">
-                            <i class="fas fa-dog"></i> Ladrido Múltiple
+                        <div class="sound-option" data-start="30">
+                            <i class="fas fa-play-circle"></i> Ladrido Fuerte (30s)
                         </div>
-                        <div class="sound-option" data-video-id="9RnbkBv_xsA" data-start="60">
-                            <i class="fas fa-dog"></i> Ladrido Agudo
+                        <div class="sound-option" data-start="45">
+                            <i class="fas fa-play-circle"></i> Ladrido Largo (45s)
                         </div>
                     </div>
                     
                     <div class="youtube-info">
                         <strong>Nota:</strong> Los sonidos se reproducen desde YouTube. Asegúrate de tener conexión a Internet y de que tu navegador permita la reproducción automática.
+                        <br><strong>Video ID:</strong> 4_O-y3SM3UM
                     </div>
                 </div>
                 
@@ -468,12 +504,12 @@
                     <h3>Instrucciones de Uso</h3>
                     <ul>
                         <li>Selecciona la hora, minutos y segundos para configurar la alarma</li>
-                        <li>Elige el tipo de ladrido que prefieres en "Seleccionar Sonido de Ladrido"</li>
+                        <li>Elige en qué segundo del video comenzará el ladrido</li>
                         <li>Haz clic en "Activar Alarma" para programarla</li>
                         <li>La alarma sonará (ladrido de perro desde YouTube) cuando llegue la hora configurada</li>
                         <li>Haz clic en "Detener Alarma" para silenciarla</li>
                         <li>Usa "Probar Sonido" para escuchar cómo sonará la alarma</li>
-                        <li>Usa "Cambiar Sonido" para seleccionar un sonido diferente mientras la alarma está activa</li>
+                        <li>Usa "Cambiar Sonido" para seleccionar un segundo diferente mientras la alarma está activa</li>
                     </ul>
                 </div>
             </div>
@@ -481,7 +517,7 @@
         
         <footer>
             <p>Alarma de Cocina con Ladrido de Perro desde YouTube • Usa la API de YouTube para reproducción de sonidos</p>
-            <p>Esta página no almacena videos, solo enlaza a contenido público de YouTube</p>
+            <p>Video utilizado: <a href="https://youtu.be/4_O-y3SM3UM?si=cbWLIMiemng4VX39" target="_blank">https://youtu.be/4_O-y3SM3UM</a></p>
         </footer>
     </div>
 
@@ -509,19 +545,20 @@
         let changeSoundButton = document.getElementById('change-sound');
         let dogImage = document.getElementById('dog-img');
         let soundOptions = document.querySelectorAll('.sound-option');
+        let videoThumbnail = document.getElementById('video-thumbnail');
         
         let alarmTime = null;
         let alarmActive = false;
         let alarmRinging = false;
-        let currentVideoId = '9RnbkBv_xsA'; // Video por defecto
-        let currentVideoStart = 0; // Segundo de inicio por defecto
+        const videoId = '4_O-y3SM3UM'; // Nuevo Video ID proporcionado
+        let currentVideoStart = 5; // Segundo de inicio por defecto
         
         // Inicializar el reproductor de YouTube
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '0',
                 width: '0',
-                videoId: currentVideoId,
+                videoId: videoId,
                 playerVars: {
                     'autoplay': 0,
                     'controls': 0,
@@ -542,6 +579,7 @@
         
         function onPlayerReady(event) {
             console.log('Reproductor de YouTube listo');
+            console.log('Video cargado: 4_O-y3SM3UM');
         }
         
         function onPlayerStateChange(event) {
@@ -555,7 +593,7 @@
                         if (alarmRinging) {
                             playYouTubeSound();
                         }
-                    }, 500);
+                    }, 1000);
                 }
             }
         }
@@ -568,7 +606,10 @@
                 // Reproducir el video
                 player.playVideo();
                 
-                console.log(`Reproduciendo sonido: ${currentVideoId} desde el segundo ${currentVideoStart}`);
+                console.log(`Reproduciendo video: ${videoId} desde el segundo ${currentVideoStart}`);
+                
+                // Actualizar imagen del perro a uno ladrando
+                dogImage.src = "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=962&q=80";
             }
         }
         
@@ -576,21 +617,23 @@
         function stopYouTubeSound() {
             if (player && player.stopVideo) {
                 player.stopVideo();
+                
+                // Restaurar imagen del perro normal si la alarma no está sonando
+                if (!alarmRinging) {
+                    dogImage.src = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80";
+                }
             }
         }
         
-        // Cambiar el video de YouTube
-        function changeYouTubeVideo(videoId, startTime) {
-            currentVideoId = videoId;
+        // Cambiar el segundo de inicio del video
+        function changeYouTubeStartTime(startTime) {
             currentVideoStart = startTime;
             
-            if (player && player.loadVideoById) {
-                player.loadVideoById({
-                    videoId: videoId,
-                    startSeconds: startTime
-                });
-                
-                console.log(`Cambiado a video: ${videoId} desde el segundo ${startTime}`);
+            console.log(`Cambiado a segundo de inicio: ${startTime}s`);
+            
+            // Si la alarma está activa, actualizamos el reproductor
+            if (player && alarmActive) {
+                player.seekTo(startTime);
             }
         }
         
@@ -672,7 +715,7 @@
             // Actualizar imagen del perro
             dogImage.src = "https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
             
-            console.log(`Alarma configurada para las ${alarmTime} con sonido ${currentVideoId}`);
+            console.log(`Alarma configurada para las ${alarmTime} con video ${videoId} desde el segundo ${currentVideoStart}`);
         }
         
         // Detener la alarma
@@ -713,9 +756,6 @@
             // Añadir animación de vibración
             document.querySelector('.alarm-display').classList.add('alarm-ringing-display');
             
-            // Cambiar imagen del perro a uno ladrando
-            dogImage.src = "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=962&q=80";
-            
             // Reproducir sonido de ladrido desde YouTube
             playYouTubeSound();
             
@@ -733,6 +773,9 @@
             alarmStatus.textContent = 'Probando sonido...';
             alarmStatus.className = 'alarm-status alarm-on';
             
+            // Cambiar imagen del perro a uno ladrando
+            dogImage.src = "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=962&q=80";
+            
             // Reproducir sonido de prueba
             playYouTubeSound();
             
@@ -742,8 +785,15 @@
                     // Detener el sonido
                     stopYouTubeSound();
                     
+                    // Restaurar imagen del perro
+                    if (alarmActive && !alarmRinging) {
+                        dogImage.src = "https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
+                    } else if (!alarmActive) {
+                        dogImage.src = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80";
+                    }
+                    
                     // Restaurar estado original
-                    if (alarmActive) {
+                    if (alarmActive && !alarmRinging) {
                         alarmStatus.textContent = `Alarma Activada para las ${alarmTime}`;
                         alarmStatus.className = 'alarm-status alarm-on';
                     } else {
@@ -758,10 +808,15 @@
         function changeSound() {
             if (alarmActive) {
                 // Abrir diálogo para seleccionar sonido
-                alert("Haz clic en uno de los sonidos disponibles en 'Seleccionar Sonido de Ladrido' para cambiarlo.");
+                alert("Haz clic en uno de los segundos disponibles en 'Sonido de Alarma' para cambiarlo.");
             } else {
-                alert("Primero activa la alarma para poder cambiar el sonido.");
+                alert("Primero activa la alarma para poder cambiar el segundo de inicio.");
             }
+        }
+        
+        // Abrir el video en YouTube al hacer clic en la miniatura
+        function openYouTubeVideo() {
+            window.open(`https://youtu.be/${videoId}?t=${currentVideoStart}s`, '_blank');
         }
         
         // Inicializar la aplicación
@@ -779,6 +834,9 @@
             testSoundButton.addEventListener('click', testSound);
             changeSoundButton.addEventListener('click', changeSound);
             
+            // Configurar evento para la miniatura del video
+            videoThumbnail.addEventListener('click', openYouTubeVideo);
+            
             // Configurar eventos para las opciones de sonido
             soundOptions.forEach(option => {
                 option.addEventListener('click', function() {
@@ -788,17 +846,15 @@
                     // Añadir clase activa a la opción seleccionada
                     this.classList.add('active');
                     
-                    // Obtener datos del video
-                    const videoId = this.getAttribute('data-video-id');
+                    // Obtener segundo de inicio
                     const startTime = parseInt(this.getAttribute('data-start'));
                     
-                    // Cambiar el video
-                    changeYouTubeVideo(videoId, startTime);
+                    // Cambiar el segundo de inicio
+                    changeYouTubeStartTime(startTime);
                     
                     // Si la alarma está activa, actualizar el sonido
                     if (alarmActive) {
-                        console.log(`Sonido de alarma cambiado a: ${videoId}`);
-                        alert(`Sonido de alarma cambiado. Sonará con este ladrido a las ${alarmTime}`);
+                        console.log(`Segundo de inicio cambiado a: ${startTime}s`);
                     }
                 });
             });
@@ -818,6 +874,7 @@
             changeSoundButton.disabled = true;
             
             console.log('Alarma de cocina con ladrido desde YouTube inicializada');
+            console.log(`Video configurado: ${videoId}`);
         }
         
         // Iniciar la aplicación cuando el DOM esté listo
@@ -825,4 +882,3 @@
     </script>
 </body>
 </html>
-#fin del codigo
